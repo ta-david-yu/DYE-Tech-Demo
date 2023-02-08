@@ -1,3 +1,3 @@
-[submodule "extern/DYEngine"]
-	path = extern/DYEngine
+[submodule "DYEngine"]
+	path = DYEngine
 	url = git@github.com:ta-david-yu/DYEngine.git
