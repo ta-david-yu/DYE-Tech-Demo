@@ -6,6 +6,7 @@
 
 #include <imgui.h>
 #include <string>
+#include <algorithm>
 
 namespace DYE
 {

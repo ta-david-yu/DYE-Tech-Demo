@@ -17,8 +17,10 @@
 #include "src/Objects/WindowCamera.h"
 #include "src/Objects/SpriteUnsignedNumber.h"
 
-#include "glm/glm.hpp"
-#include "glm/gtc/quaternion.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+#include <array>
 
 namespace DYE
 {
