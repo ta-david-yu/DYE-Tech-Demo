@@ -4,19 +4,22 @@ project(DYETechDemo)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(DYEngine/cmake/Functions/RedirectOutputTo.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/DYEngine/cmake/Functions/")
+include(RedirectOutputTo)
+
+#include(DYEngine/cmake/Functions/RedirectOutputTo.cmake)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-    RedirectOutputTo("out/Debug")
+    RedirectOutputTo("build/Debug")
     add_compile_definitions(DYE_DEBUG)
     add_compile_definitions(DYE_OPENGL_DEBUG)
 elseif (CMAKE_BUILD_TYPE MATCHES Release)
-    RedirectOutputTo("out/Release")
+    RedirectOutputTo("build/Release")
 endif ()
 
 add_subdirectory(DYEngine/DYEngine)
 
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/appicon.rc")
-add_executable(DYETechDemo
+set(SOURCE_FILES
         src/DYETechDemoApp.cpp
         src/ColliderManager.cpp
         src/GizmosRippleEffectManager.cpp
@@ -40,10 +43,38 @@ add_executable(DYETechDemo
         src/Objects/SpriteUnsignedNumber.cpp
         src/Objects/Wall.cpp
         src/Objects/PongBall.cpp
-        src/Objects/LandBall.cpp
-        ${APP_ICON_RESOURCE_WINDOWS})
+        src/Objects/LandBall.cpp)
 
-target_include_directories(DYETechDemo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(HEADER_FILES
+        src/DYETechDemoApp.h
+        src/ColliderManager.h
+        src/GizmosRippleEffectManager.h
+        src/WindowParticlesManager.h
+        src/Layers/MainMenuLayer.h
+        src/Layers/CollisionTestLayer.h
+        src/Layers/PongLayer.h
+        src/Layers/LandTheBallLayer.h
+        src/Components/Transform.h
+        src/Components/Sprite.h
+        src/Components/Collider.h
+        src/Components/Velocity.h
+        src/Components/Hittable.h
+        src/Components/AttachableToPaddle.h
+        src/Objects/PlayerPaddle.h
+        src/Objects/Camera.h
+        src/Objects/PongPlayer.h
+        src/Objects/PongHomebase.h
+        src/Objects/WindowCamera.h
+        src/Objects/SpriteButton.h
+        src/Objects/SpriteUnsignedNumber.h
+        src/Objects/Wall.h
+        src/Objects/PongBall.h
+        src/Objects/LandBall.h)
+
+add_executable(DYETechDemo
+        ${SOURCE_FILES}
+        ${HEADER_FILES}
+        ${APP_ICON_RESOURCE_WINDOWS})
 
 target_link_libraries(DYETechDemo DYEngine)
 
