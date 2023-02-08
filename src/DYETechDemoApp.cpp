@@ -20,6 +20,6 @@ namespace DYE
 	Application *CreateApplication()
 	{
 		DYE_LOG("TEST");
-		return new DYETechDemoApp("Temp");
+		return new DYETechDemoApp("DYEngine Tech Demo");
 	}
 }
