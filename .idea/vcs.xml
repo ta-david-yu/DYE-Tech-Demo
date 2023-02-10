@@ -4,7 +4,7 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/DYEngine" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/DYEngine/DYEngine/extern/glm" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/DYEngine/DYEngine/extern/imgui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/DYEngine/DYEngine/extern/imgui/imgui" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/DYEngine/DYEngine/extern/rttr/rttr" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/DYEngine/DYEngine/extern/yaml-cpp" vcs="Git" />
   </component>
