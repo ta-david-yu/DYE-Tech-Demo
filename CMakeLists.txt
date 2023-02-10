@@ -76,6 +76,7 @@ add_executable(DYETechDemo
         ${HEADER_FILES}
         ${APP_ICON_RESOURCE_WINDOWS})
 
+target_include_directories(DYETechDemo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(DYETechDemo DYEngine)
 
 # Link libstdc++ statically to the executable
