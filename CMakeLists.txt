@@ -17,6 +17,8 @@ elseif (CMAKE_BUILD_TYPE MATCHES Release)
 endif ()
 
 add_subdirectory(DYEngine/DYEngine)
+add_subdirectory(DYEngine/DYEntity)
+add_subdirectory(DYEngine/DYEditor)
 
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/appicon.rc")
 set(SOURCE_FILES
@@ -71,13 +73,13 @@ set(HEADER_FILES
         src/Objects/PongBall.h
         src/Objects/LandBall.h)
 
-add_executable(DYETechDemo
-        ${SOURCE_FILES}
-        ${HEADER_FILES}
-        ${APP_ICON_RESOURCE_WINDOWS})
+add_executable(DYETechDemo ${SOURCE_FILES} ${HEADER_FILES} ${APP_ICON_RESOURCE_WINDOWS})
 
 target_include_directories(DYETechDemo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 target_link_libraries(DYETechDemo DYEngine)
+target_link_libraries(DYETechDemo DYEntity)
+target_link_libraries(DYETechDemo DYEditor)
 
 # Link libstdc++ statically to the executable
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Bstatic,--whole-archive -lwinpthread -Wl,--no-whole-archive")
