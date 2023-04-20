@@ -94,7 +94,7 @@ namespace DYE
 			newParticle.IsPlaying = true;
 			newParticle.Timer = 0.0f;
 
-			newParticle.pWindow = WindowManager::CreateWindow(WindowProperty("Particle " + std::to_string(m_Particles.size()), 10, 10));
+			newParticle.pWindow = WindowManager::CreateWindow(WindowProperties("Particle " + std::to_string(m_Particles.size()), 10, 10));
 			newParticle.pWindow->SetBorderedIfWindowed(false);
 			if (m_ShowParticle)
 			{
@@ -112,7 +112,7 @@ namespace DYE
 		for (int i = 0; i < initialPoolSize; ++i)
 		{
 			WindowParticle particle;
-			particle.pWindow = WindowManager::CreateWindow(WindowProperty("Particle " + std::to_string(i), 0, 0));
+			particle.pWindow = WindowManager::CreateWindow(WindowProperties("Particle " + std::to_string(i), 0, 0));
 			particle.pWindow->SetBorderedIfWindowed(false);
 
 			// Hide the window outside the screen.
@@ -215,7 +215,7 @@ namespace DYE
 				ImGui::Separator();
 				ImGuiUtil::DrawReadOnlyTextWithLabel("Life Time", std::to_string(particle.Timer) + "/" + std::to_string(particle.LifeTime));
 				ImGuiUtil::DrawReadOnlyTextWithLabel("Size", std::to_string(particle.GetSize()));
-				ImGuiUtil::DrawVec2Control("Position", particle.Position);
+				ImGuiUtil::DrawVector2Control("Position", particle.Position);
 			}
 		}
 		ImGui::End();

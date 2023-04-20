@@ -26,9 +26,9 @@ namespace DYE::MiniGame
 		m_pWindow = &window;
 
 		Camera.Properties.TargetType = RenderTargetType::Window;
-		Camera.Properties.TargetWindowID = m_pWindow->GetWindowID();
+		Camera.Properties.TargetWindowIndex = WindowManager::TryGetWindowIndexFromID(m_pWindow->GetWindowID()).value();
 
-		Camera.Transform.Position = {0, 0, 10};
+		Camera.Position = {0, 0, 10};
 		Camera.Properties.IsOrthographic = true;
 		Camera.Properties.OrthographicSize = 10;
 		Camera.Properties.UseManualAspectRatio = false;
@@ -39,7 +39,7 @@ namespace DYE::MiniGame
 		ResetCachedPosition();
 	}
 
-	void WindowCamera::CreateWindow(std::shared_ptr<ContextBase> contextBase, WindowProperty const& windowProperty)
+	void WindowCamera::CreateWindow(std::shared_ptr<ContextBase> contextBase, WindowProperties const& windowProperty)
 	{
 		if (m_pWindow != nullptr)
 		{
@@ -53,9 +53,9 @@ namespace DYE::MiniGame
 		ContextBase::SetVSyncCountForCurrentContext(0);
 
 		Camera.Properties.TargetType = RenderTargetType::Window;
-		Camera.Properties.TargetWindowID = m_pWindow->GetWindowID();
+		Camera.Properties.TargetWindowIndex = WindowManager::TryGetWindowIndexFromID(m_pWindow->GetWindowID()).value();
 
-		Camera.Transform.Position = {0, 0, 10};
+		Camera.Position = {0, 0, 10};
 		Camera.Properties.IsOrthographic = true;
 		Camera.Properties.OrthographicSize = 10;
 		Camera.Properties.UseManualAspectRatio = false;
@@ -135,15 +135,15 @@ namespace DYE::MiniGame
 		normalizedWindowPos.y += windowHeight * 0.5f;
 
 		int const mainDisplayIndex = m_pWindow->GetDisplayIndex();
-		std::optional<DisplayMode> const displayMode = SCREEN.GetDisplayMode(mainDisplayIndex);
+		std::optional<DisplayMode> const displayMode = SCREEN.TryGetDisplayMode(mainDisplayIndex);
 		float const screenWidth = displayMode->Width;
 		float const screenHeight = displayMode->Height;
 
 		normalizedWindowPos.y = screenHeight - normalizedWindowPos.y;
 
 		float const scalar = 0.5f; //* (320.0f / windowHeight);
-		Camera.Transform.Position.x = CameraOffset.x + ((normalizedWindowPos.x - screenWidth * 0.5f) / 32.0f) * scalar;
-		Camera.Transform.Position.y = CameraOffset.y + ((normalizedWindowPos.y - screenHeight * 0.5f) / 32.0f) * scalar;
+		Camera.Position.x = CameraOffset.x + ((normalizedWindowPos.x - screenWidth * 0.5f) / 32.0f) * scalar;
+		Camera.Position.y = CameraOffset.y + ((normalizedWindowPos.y - screenHeight * 0.5f) / 32.0f) * scalar;
 
 		float const sizeScalar = 1.0f * (320.0f / windowHeight);
 		Camera.Properties.OrthographicSize = 5 / sizeScalar;

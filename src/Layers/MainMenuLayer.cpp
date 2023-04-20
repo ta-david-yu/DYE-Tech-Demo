@@ -99,11 +99,11 @@ namespace DYE
 		m_MainWindow->Restore();
 
 		// Set camera properties
-		m_MainCamera.Transform.Position = glm::vec3 {0, 0, 10};
+		m_MainCamera.Position = glm::vec3 {0, 0, 10};
 		m_MainCamera.Properties.IsOrthographic = true;
 		m_MainCamera.Properties.OrthographicSize = 15;
 		m_MainCamera.Properties.TargetType = RenderTargetType::Window;
-		m_MainCamera.Properties.TargetWindowID = m_MainWindow->GetWindowID();
+		m_MainCamera.Properties.TargetWindowIndex = WindowManager::MainWindowIndex;
 		m_MainCamera.Properties.UseManualAspectRatio = false;
 		m_MainCamera.Properties.ManualAspectRatio = (float) 1600 / 900;
 		m_MainCamera.Properties.ViewportValueType = ViewportValueType::RelativeDimension;
@@ -252,7 +252,7 @@ namespace DYE
 
 	void MainMenuLayer::OnRender()
 	{
-		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera.GetTransformedProperties());
+		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera);
 
 		// Scroll background texture.
 		float const backgroundTilingOffsetChange = TIME.DeltaTime() * m_BackgroundScrollingSpeed;

@@ -69,8 +69,8 @@ namespace DYE
 		m_pMainWindow->Restore();
 
 		// Initialize screen parameters.
-		auto displayMode = Screen::GetInstance().GetDisplayMode(0);
-		m_ScreenDimensions = {displayMode->Width, displayMode->Height };
+		auto displayMode = Screen::GetInstance().TryGetDisplayMode(0);
+		m_ScreenDimensions = glm::vec<2, std::uint32_t> {displayMode->Width, displayMode->Height };
 
 		// UI.
 		m_ScoreNumber.Transform.Scale = {1, 1, 1};
@@ -103,18 +103,18 @@ namespace DYE
 		m_LandBall.Transform.Position = {0, 0, 0};
 		m_LandBall.Velocity.Value = {0, 0};
 
-		m_pBallWindow = WindowManager::CreateWindow(WindowProperty("Ball"));
+		m_pBallWindow = WindowManager::CreateWindow(WindowProperties("Ball"));
 		m_pBallWindow->SetContext(m_pMainWindow->GetContext());
 		m_pBallWindow->SetSize(m_ScreenPixelPerUnit, m_ScreenPixelPerUnit);
 		m_pBallWindow->CenterWindow();
 		m_pBallWindow->SetBorderedIfWindowed(false);
 
-		m_pPlatformWindow = WindowManager::CreateWindow(WindowProperty("Platform"));
+		m_pPlatformWindow = WindowManager::CreateWindow(WindowProperties("Platform"));
 		m_pPlatformWindow->SetSize(m_ScreenPixelPerUnit * m_PlatformWidth, m_ScreenPixelPerUnit * m_PlatformHeight);
 		m_pPlatformWindow->CenterWindow();
 		m_pPlatformWindow->SetBorderedIfWindowed(false);
 
-		m_pSlowMotionTimerBarWindow = WindowManager::CreateWindow(WindowProperty("Bullet Time Energy"));
+		m_pSlowMotionTimerBarWindow = WindowManager::CreateWindow(WindowProperties("Bullet Time Energy"));
 		m_pSlowMotionTimerBarWindow->SetSize(m_ScreenDimensions.x, 40);
 		m_pSlowMotionTimerBarWindow->SetPosition(0, m_ScreenDimensions.y - 80);
 
@@ -126,18 +126,18 @@ namespace DYE
 		m_BackgroundTransform.Position = {0, 0, -2};
 
 		// Set camera properties
-		m_MainCamera.Transform.Position = glm::vec3 {0, 0, 10};
+		m_MainCamera.Position = glm::vec3 {0, 0, 10};
 		m_MainCamera.Properties.IsOrthographic = true;
 		m_MainCamera.Properties.OrthographicSize = 12;
 		m_MainCamera.Properties.TargetType = RenderTargetType::Window;
-		m_MainCamera.Properties.TargetWindowID = m_pMainWindow->GetWindowID();
+		m_MainCamera.Properties.TargetWindowIndex = WindowManager::TryGetWindowIndexFromID(m_pMainWindow->GetWindowID()).value();
 		m_MainCamera.Properties.UseManualAspectRatio = false;
 		m_MainCamera.Properties.ManualAspectRatio = (float) 1600 / 900;
 		m_MainCamera.Properties.ViewportValueType = ViewportValueType::RelativeDimension;
 		m_MainCamera.Properties.Viewport = { 0, 0, 1, 1 };
 
 		m_BallCamera = m_MainCamera;
-		m_BallCamera.Properties.TargetWindowID = m_pBallWindow->GetWindowID();
+		m_BallCamera.Properties.TargetWindowIndex = WindowManager::TryGetWindowIndexFromID(m_pBallWindow->GetWindowID()).value();
 		m_BallCamera.Properties.OrthographicSize = 1.5f;
 
 		// Hide the object windows by default.
@@ -546,8 +546,8 @@ namespace DYE
 
 	void LandTheBallLayer::OnRender()
 	{
-		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera.GetTransformedProperties());
-		RenderPipelineManager::RegisterCameraForNextRender(m_BallCamera.GetTransformedProperties());
+		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera);
+		RenderPipelineManager::RegisterCameraForNextRender(m_BallCamera);
 
 		// Scroll background texture.
 		bool const isInSlowMotion = m_ActivateSlowMotion && m_SlowMotionTimer > 0.0f;

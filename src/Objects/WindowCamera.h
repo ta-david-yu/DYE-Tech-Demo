@@ -1,7 +1,6 @@
 #pragma once
 
-#include "src/Objects/Camera.h"
-
+#include "Graphics/Camera.h"
 #include "Math/EasingFunctions.h"
 
 namespace DYE
@@ -33,7 +32,7 @@ namespace DYE::MiniGame
 		void ResetCachedPosition();
 
 		void AssignWindow(WindowBase& window);
-		void CreateWindow(std::shared_ptr<ContextBase> contextBase, WindowProperty const& windowProperty);
+		void CreateWindow(std::shared_ptr<ContextBase> contextBase, WindowProperties const& windowProperty);
 
 		void SmoothResize(std::uint32_t width, std::uint32_t height);
 		void Translate(glm::vec2 offset);

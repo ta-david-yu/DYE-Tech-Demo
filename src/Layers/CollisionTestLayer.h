@@ -3,6 +3,7 @@
 #include "Core/LayerBase.h"
 #include "Event/KeyEvent.h"
 
+#include "Graphics/Camera.h"
 #include "src/ColliderManager.h"
 
 #include "glm/glm.hpp"
@@ -72,6 +73,6 @@ namespace DYE
 
 		ColliderManager m_ColliderManager;
 
-		std::shared_ptr<CameraProperties> m_CameraProperties;
+		std::shared_ptr<DYE::Camera> m_Camera;
 	};
 }

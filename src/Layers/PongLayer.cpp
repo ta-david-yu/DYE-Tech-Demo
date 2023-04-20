@@ -27,7 +27,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/OpenGL.h"
 #include "Graphics/Texture.h"
-#include "Graphics/CameraProperties.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Material.h"
 #include "Graphics/DebugDraw.h"
 
@@ -49,8 +49,8 @@ namespace DYE
 		RenderCommand::GetInstance().SetLinePrimitiveWidth(3);
 
 		// Initialize screen parameters.
-		auto displayMode = Screen::GetInstance().GetDisplayMode(0);
-		m_ScreenDimensions = {displayMode->Width, displayMode->Height };
+		auto displayMode = Screen::GetInstance().TryGetDisplayMode(0);
+		m_ScreenDimensions = glm::vec<2, std::uint32_t>{displayMode->Width, displayMode->Height };
 
 		// Create ball objects.
 		m_Ball.Transform.Position = {0, 0, 0};
@@ -155,18 +155,18 @@ namespace DYE
 		m_MainWindow->SetSize(1600, 900);
 		m_MainWindow->CenterWindow();
 
-		m_MainCamera.Transform.Position = glm::vec3 {0, 0, 10};
+		m_MainCamera.Position = glm::vec3 {0, 0, 10};
 		m_MainCamera.Properties.IsOrthographic = true;
 		m_MainCamera.Properties.OrthographicSize = 14.07f;
 		m_MainCamera.Properties.TargetType = RenderTargetType::Window;
-		m_MainCamera.Properties.TargetWindowID = m_MainWindow->GetWindowID();
+		m_MainCamera.Properties.TargetWindowIndex = WindowManager::MainWindowIndex;
 		m_MainCamera.Properties.UseManualAspectRatio = false;
 		m_MainCamera.Properties.ManualAspectRatio = (float) 1600 / 900;
 		m_MainCamera.Properties.ViewportValueType = ViewportValueType::RelativeDimension;
 		m_MainCamera.Properties.Viewport = { 0, 0, 1, 1 };
 
 		// Create window camera.
-		m_Player1WindowCamera.CreateWindow(m_MainWindow->GetContext(), WindowProperty("Player 1 - Use Right Analog Stick To Move Window", 800, 900));
+		m_Player1WindowCamera.CreateWindow(m_MainWindow->GetContext(), WindowProperties("Player 1 - Use Right Analog Stick To Move Window", 800, 900));
 		m_Player1WindowCamera.GetWindowPtr()->SetBorderedIfWindowed(false);
 		m_Player1WindowCamera.GetWindowPtr()->CenterWindow();
 		auto position = m_Player1WindowCamera.GetWindowPtr()->GetPosition();
@@ -174,7 +174,7 @@ namespace DYE
 		m_Player1WindowCamera.GetWindowPtr()->SetPosition(position.x, position.y);
 		m_Player1WindowCamera.ResetCachedPosition();
 
-		m_Player2WindowCamera.CreateWindow(m_MainWindow->GetContext(), WindowProperty("Player 2 - Use Right Analog Stick To Move Window", 800, 900));
+		m_Player2WindowCamera.CreateWindow(m_MainWindow->GetContext(), WindowProperties("Player 2 - Use Right Analog Stick To Move Window", 800, 900));
 		m_Player2WindowCamera.GetWindowPtr()->SetBorderedIfWindowed(false);
 		m_Player2WindowCamera.GetWindowPtr()->CenterWindow();
 		position = m_Player2WindowCamera.GetWindowPtr()->GetPosition();
@@ -259,9 +259,9 @@ namespace DYE
 
 	void PongLayer::OnRender()
 	{
-		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera.GetTransformedProperties());
-		RenderPipelineManager::RegisterCameraForNextRender(m_Player1WindowCamera.Camera.GetTransformedProperties());
-		RenderPipelineManager::RegisterCameraForNextRender(m_Player2WindowCamera.Camera.GetTransformedProperties());
+		RenderPipelineManager::RegisterCameraForNextRender(m_MainCamera);
+		RenderPipelineManager::RegisterCameraForNextRender(m_Player1WindowCamera.Camera);
+		RenderPipelineManager::RegisterCameraForNextRender(m_Player2WindowCamera.Camera);
 
 		renderSprite(m_Ball.Transform, m_Ball.Sprite);
 		renderSprite(m_BorderTransform, m_BorderSprite);
@@ -989,7 +989,7 @@ namespace DYE
 				for (int i = 0; i < m_Players.size(); i++)
 				{
 					auto& player = m_Players[i];
-					ImGuiUtil::DrawUnsignedIntControl("Player " + std::to_string(i) + " Health", player.State.Health, 0);
+					ImGuiUtil::DrawIntControl("Player " + std::to_string(i) + " Health", player.State.Health, 0);
 				}
 
 				if (m_Ball.Attachable.IsAttached)
@@ -998,7 +998,7 @@ namespace DYE
 				}
 				else
 				{
-					ImGuiUtil::DrawVec2Control("Ball Velocity", m_Ball.Velocity.Value, 0.0f);
+					ImGuiUtil::DrawVector2Control("Ball Velocity", m_Ball.Velocity.Value, 0.0f);
 				}
 			}
 
@@ -1006,7 +1006,7 @@ namespace DYE
 			{
 				int const mainDisplayIndex = m_MainWindow->GetDisplayIndex();
 				ImGui::Text("MainWindowDisplayIndex = %d", mainDisplayIndex);
-				std::optional<DisplayMode> const displayMode = SCREEN.GetDisplayMode(mainDisplayIndex);
+				std::optional<DisplayMode> const displayMode = SCREEN.TryGetDisplayMode(mainDisplayIndex);
 				if (displayMode.has_value())
 				{
 					ImGui::Text("Display %d Info = (w=%d, h=%d, r=%d)", mainDisplayIndex, displayMode->Width, displayMode->Height, displayMode->RefreshRate);
@@ -1118,20 +1118,20 @@ namespace DYE
 	{
 		ImGui::PushID(name.c_str());
 
-		ImGuiUtil::DrawVec3Control("Position", transform.Position);
-		ImGuiUtil::DrawVec3Control("Scale", transform.Scale);
+		ImGuiUtil::DrawVector3Control("Position", transform.Position);
+		ImGuiUtil::DrawVector3Control("Scale", transform.Scale);
 
 		glm::vec3 rotationInEulerAnglesDegree = glm::eulerAngles(transform.Rotation);
 		rotationInEulerAnglesDegree += glm::vec3(0.f);
 		rotationInEulerAnglesDegree = glm::degrees(rotationInEulerAnglesDegree);
-		if (ImGuiUtil::DrawVec3Control("Rotation", rotationInEulerAnglesDegree))
+		if (ImGuiUtil::DrawVector3Control("Rotation", rotationInEulerAnglesDegree))
 		{
 			rotationInEulerAnglesDegree.y = glm::clamp(rotationInEulerAnglesDegree.y, -90.f, 90.f);
 			transform.Rotation = glm::quat {glm::radians(rotationInEulerAnglesDegree)};
 		}
 
-		ImGuiUtil::DrawVec2Control("_TilingScale", sprite.TilingScale, 1.0f);
-		ImGuiUtil::DrawVec2Control("_TilingOffset", sprite.TilingOffset, 0.0f);
+		ImGuiUtil::DrawVector2Control("_TilingScale", sprite.TilingScale, 1.0f);
+		ImGuiUtil::DrawVector2Control("_TilingOffset", sprite.TilingOffset, 0.0f);
 		ImGuiUtil::DrawColor4Control("_Color", sprite.Color);
 
 		ImGui::PopID();

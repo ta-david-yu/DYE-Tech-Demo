@@ -2,13 +2,14 @@
 
 #include "Core/LayerBase.h"
 
+#include "Graphics/Camera.h"
+
 #include "src/GizmosRippleEffectManager.h"
 #include "src/WindowParticlesManager.h"
 
 #include "src/Components/Sprite.h"
 #include "src/Components/Transform.h"
 #include "src/Components/Collider.h"
-#include "src/Objects/Camera.h"
 #include "src/Objects/SpriteUnsignedNumber.h"
 #include "src/Objects/LandBall.h"
 
@@ -103,12 +104,12 @@ namespace DYE
 		bool m_HasNewHighScore = false;
 
 		// Game world
-		MiniGame::Camera m_MainCamera;
+		Camera m_MainCamera;
 
 		// Ball
 		MiniGame::LandBall m_LandBall;
 		WindowBase* m_pBallWindow = nullptr;
-		MiniGame::Camera m_BallCamera;
+		Camera m_BallCamera;
 
 		// Bullet time
 		constexpr static float MaxSlowMotionDuration = 1;

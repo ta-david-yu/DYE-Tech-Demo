@@ -3,13 +3,13 @@
 #include "Core/LayerBase.h"
 #include "Event/KeyEvent.h"
 #include "Util/FPSCounter.h"
+#include "Graphics/Camera.h"
 
 #include "src/ColliderManager.h"
 #include "src/WindowParticlesManager.h"
 #include "src/GizmosRippleEffectManager.h"
 
 #include "src/Objects/Wall.h"
-#include "src/Objects/Camera.h"
 #include "src/Objects/PongPlayer.h"
 #include "src/Objects/PlayerPaddle.h"
 #include "src/Objects/PongBall.h"
@@ -112,7 +112,7 @@ namespace DYE
 		MiniGame::Transform m_CenterLineTransform;
 		MiniGame::Sprite m_CenterLineSprite;
 
-		MiniGame::Camera m_MainCamera;
+		Camera m_MainCamera;
 		MiniGame::PongBall m_Ball;
 		std::vector<MiniGame::PongPlayer> m_Players;
 		std::vector<MiniGame::PlayerPaddle> m_PlayerPaddles;

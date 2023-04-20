@@ -2,11 +2,12 @@
 
 #include "Core/LayerBase.h"
 
+#include "Graphics/Camera.h"
+
 #include "src/ColliderManager.h"
 #include "src/Components/Sprite.h"
 #include "src/Components/Transform.h"
 #include "src/Components/Collider.h"
-#include "src/Objects/Camera.h"
 #include "src/Objects/SpriteButton.h"
 #include "src/Objects/SpriteUnsignedNumber.h"
 
@@ -54,7 +55,7 @@ namespace DYE
 
 		// Game world
 		ColliderManager m_ColliderManager;
-		MiniGame::Camera m_MainCamera;
+		Camera m_MainCamera;
 
 		MiniGame::Transform m_BackgroundTransform;
 		MiniGame::Sprite m_BackgroundSprite;

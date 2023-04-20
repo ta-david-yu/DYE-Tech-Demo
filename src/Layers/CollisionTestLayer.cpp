@@ -27,7 +27,7 @@
 #include "Graphics/Shader.h"
 #include "Graphics/OpenGL.h"
 #include "Graphics/Texture.h"
-#include "Graphics/CameraProperties.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Material.h"
 #include "Graphics/DebugDraw.h"
 
@@ -70,16 +70,16 @@ namespace DYE
 		auto mainWindowPtr = WindowManager::GetMainWindow();
 		mainWindowPtr->SetSize(1600, 900);
 
-		m_CameraProperties = std::make_shared<CameraProperties>();
-		m_CameraProperties->Position = glm::vec3 {0, 0, 10};
-		m_CameraProperties->IsOrthographic = true;
-		m_CameraProperties->OrthographicSize = 10;
-		m_CameraProperties->TargetType = RenderTargetType::Window;
-		m_CameraProperties->TargetWindowID = mainWindowPtr->GetWindowID();
-		m_CameraProperties->UseManualAspectRatio = false;
-		m_CameraProperties->ManualAspectRatio = (float) 1600 / 900;
-		m_CameraProperties->ViewportValueType = ViewportValueType::RelativeDimension;
-		m_CameraProperties->Viewport = { 0, 0, 1, 1 };
+		m_Camera = std::make_shared<Camera>();
+		m_Camera->Position = glm::vec3 {0, 0, 10};
+		m_Camera->Properties.IsOrthographic = true;
+		m_Camera->Properties.OrthographicSize = 10;
+		m_Camera->Properties.TargetType = RenderTargetType::Window;
+		m_Camera->Properties.TargetWindowIndex = WindowManager::MainWindowIndex;
+		m_Camera->Properties.UseManualAspectRatio = false;
+		m_Camera->Properties.ManualAspectRatio = (float) 1600 / 900;
+		m_Camera->Properties.ViewportValueType = ViewportValueType::RelativeDimension;
+		m_Camera->Properties.Viewport = {0, 0, 1, 1 };
 
 		m_WindowPosition = mainWindowPtr->GetPosition();
 
@@ -91,7 +91,7 @@ namespace DYE
 
 	void CollisionTestLayer::OnRender()
 	{
-		RenderPipelineManager::RegisterCameraForNextRender(*m_CameraProperties);
+		RenderPipelineManager::RegisterCameraForNextRender(*m_Camera);
 
 		renderSpriteObject(*m_OriginObject);
 		renderSpriteObject(*m_MovingObject);
@@ -355,18 +355,18 @@ namespace DYE
 		normalizedWindowPos.y += windowHeight * 0.5f;
 
 		int const mainDisplayIndex = mainWindowPtr->GetDisplayIndex();
-		std::optional<DisplayMode> const displayMode = SCREEN.GetDisplayMode(mainDisplayIndex);
+		std::optional<DisplayMode> const displayMode = SCREEN.TryGetDisplayMode(mainDisplayIndex);
 		float const screenWidth = displayMode->Width;
 		float const screenHeight = displayMode->Height;
 
 		normalizedWindowPos.y = screenHeight - normalizedWindowPos.y;
 
 		float const scalar = 0.5f; //* (320.0f / windowHeight);
-		m_CameraProperties->Position.x = ((normalizedWindowPos.x - screenWidth * 0.5f) / 32.0f) * scalar;
-		m_CameraProperties->Position.y = ((normalizedWindowPos.y - screenHeight * 0.5f) / 32.0f) * scalar;
+		m_Camera->Position.x = ((normalizedWindowPos.x - screenWidth * 0.5f) / 32.0f) * scalar;
+		m_Camera->Position.y = ((normalizedWindowPos.y - screenHeight * 0.5f) / 32.0f) * scalar;
 
 		float const sizeScalar = 1.0f * (320.0f / windowHeight);
-    	m_CameraProperties->OrthographicSize = 5 / sizeScalar;
+		m_Camera->Properties.OrthographicSize = 5 / sizeScalar;
 	}
 
     void CollisionTestLayer::OnFixedUpdate()
@@ -415,7 +415,7 @@ namespace DYE
 
 			int const mainDisplayIndex = mainWindowPtr->GetDisplayIndex();
 			ImGui::Text("MainWindowDisplayIndex = %d", mainDisplayIndex);
-			std::optional<DisplayMode> const displayMode = SCREEN.GetDisplayMode(mainDisplayIndex);
+			std::optional<DisplayMode> const displayMode = SCREEN.TryGetDisplayMode(mainDisplayIndex);
 			if (displayMode.has_value())
 			{
 				ImGui::Text("Display %d Info = (w=%d, h=%d, r=%d)", mainDisplayIndex, displayMode->Width, displayMode->Height, displayMode->RefreshRate);
@@ -465,7 +465,7 @@ namespace DYE
 			}
 
 			ImGui::Separator();
-			ImGuiUtil::DrawCameraPropertiesControl("Camera Properties", *m_CameraProperties);
+			ImGuiUtil::DrawCameraPropertiesControl("Camera Properties", m_Camera->Properties);
 
 			ImGui::Separator();
 			ImGuiUtil::DrawFloatControl("Camera Speed", m_WindowPixelChangePerSecond, 300);
@@ -493,13 +493,13 @@ namespace DYE
 	{
 		ImGui::PushID(object.Name.c_str());
 
-		ImGuiUtil::DrawVec3Control("Position##" + object.Name, object.Position);
-		ImGuiUtil::DrawVec3Control("Scale##" + object.Name, object.Scale);
+		ImGuiUtil::DrawVector3Control("Position##" + object.Name, object.Position);
+		ImGuiUtil::DrawVector3Control("Scale##" + object.Name, object.Scale);
 
 		glm::vec3 rotationInEulerAnglesDegree = glm::eulerAngles(object.Rotation);
 		rotationInEulerAnglesDegree += glm::vec3(0.f);
 		rotationInEulerAnglesDegree = glm::degrees(rotationInEulerAnglesDegree);
-		if (ImGuiUtil::DrawVec3Control("Rotation##" + object.Name, rotationInEulerAnglesDegree))
+		if (ImGuiUtil::DrawVector3Control("Rotation##" + object.Name, rotationInEulerAnglesDegree))
 		{
 			rotationInEulerAnglesDegree.y = glm::clamp(rotationInEulerAnglesDegree.y, -90.f, 90.f);
 			object.Rotation = glm::quat {glm::radians(rotationInEulerAnglesDegree)};

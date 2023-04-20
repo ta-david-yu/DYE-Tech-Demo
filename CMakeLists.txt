@@ -4,10 +4,8 @@ project(DYETechDemo)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/DYEngine/cmake/Functions/")
-include(RedirectOutputTo)
 
-#include(DYEngine/cmake/Functions/RedirectOutputTo.cmake)
+include(DYEngine/cmake/Modules/RedirectOutputTo.cmake)
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     RedirectOutputTo("build/Debug")
     add_compile_definitions(DYE_DEBUG)
@@ -17,7 +15,6 @@ elseif (CMAKE_BUILD_TYPE MATCHES Release)
 endif ()
 
 add_subdirectory(DYEngine/DYEngine)
-add_subdirectory(DYEngine/DYEntity)
 add_subdirectory(DYEngine/DYEditor)
 
 set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/appicon.rc")
@@ -37,7 +34,6 @@ set(SOURCE_FILES
         src/Components/Hittable.cpp
         src/Components/AttachableToPaddle.cpp
         src/Objects/PlayerPaddle.cpp
-        src/Objects/Camera.cpp
         src/Objects/PongPlayer.cpp
         src/Objects/PongHomebase.cpp
         src/Objects/WindowCamera.cpp
@@ -63,7 +59,6 @@ set(HEADER_FILES
         src/Components/Hittable.h
         src/Components/AttachableToPaddle.h
         src/Objects/PlayerPaddle.h
-        src/Objects/Camera.h
         src/Objects/PongPlayer.h
         src/Objects/PongHomebase.h
         src/Objects/WindowCamera.h
@@ -78,7 +73,6 @@ add_executable(DYETechDemo ${SOURCE_FILES} ${HEADER_FILES} ${APP_ICON_RESOURCE_W
 target_include_directories(DYETechDemo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(DYETechDemo DYEngine)
-target_link_libraries(DYETechDemo DYEntity)
 target_link_libraries(DYETechDemo DYEditor)
 
 # Link libstdc++ statically to the executable
@@ -127,5 +121,5 @@ set(BINARY_ASSETS
         assets/Sprite_P1Wins.png
         assets/Sprite_P2Wins.png)
 
-include(DYEngine/cmake/Functions/CopyAssets.cmake)
+include(DYEngine/cmake/Modules/CopyAssets.cmake)
 CopyBinaryAssets(${BINARY_ASSETS})
